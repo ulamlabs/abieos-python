@@ -1,0 +1,67 @@
+{
+    "version": "eosio::abi/1.0",
+    "structs": [
+        {
+            "name": "s1",
+            "base": "",
+            "fields": [
+                {
+                    "name": "x1",
+                    "type": "int8"
+                }
+            ]
+        },
+        {
+            "name": "s2",
+            "base": "",
+            "fields": [
+                {
+                    "name": "y1",
+                    "type": "int8$"
+                },
+                {
+                    "name": "y2",
+                    "type": "int8$"
+                }
+            ]
+        },
+        {
+            "name": "s3",
+            "base": "",
+            "fields": [
+                {
+                    "name": "z1",
+                    "type": "int8$"
+                },
+                {
+                    "name": "z2",
+                    "type": "v1$"
+                },
+                {
+                    "name": "z3",
+                    "type": "s2$"
+                }
+            ]
+        },
+        {
+            "name": "s4",
+            "base": "",
+            "fields": [
+                {
+                    "name": "a1",
+                    "type": "int8?$"
+                },
+                {
+                    "name": "b1",
+                    "type": "int8[]$"
+                }
+            ]
+        }
+    ],
+    "variants": [
+        {
+            "name": "v1",
+            "types": ["int8","s1","s2"]
+        }
+    ]
+}
