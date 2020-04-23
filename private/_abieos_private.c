@@ -1,14 +1,14 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
-#include "python_abieos.c"
+#include "abieos.c"
 
 static PyMethodDef AbieosMethods[] = {
     // create and destroy context
     {"create", create, METH_NOARGS, ""},
-    {"destroy", destroy, METH_NOARGS, ""},
+    {"destroy", destroy, METH_VARARGS, ""},
 
-    {"get_error", get_error, METH_NOARGS, ""},
-    {"get_bin_size", get_bin_size, METH_NOARGS, ""},
+    {"get_error", get_error, METH_VARARGS, ""},
+    {"get_bin_size", get_bin_size, METH_VARARGS, ""},
     {"get_bin_data", get_bin_data, METH_VARARGS, ""},
     {"get_bin_hex", get_bin_hex, METH_VARARGS, ""},
     {"string_to_name", string_to_name, METH_VARARGS, ""},
@@ -27,14 +27,14 @@ static PyMethodDef AbieosMethods[] = {
 
 static struct PyModuleDef abieos = {
     PyModuleDef_HEAD_INIT,
-    "abieos",
+    "_private",
     NULL,
     -1,
     AbieosMethods
 };
 
 PyMODINIT_FUNC
-PyInit_abieos(void)
+PyInit__private(void)
 {
     PyObject *m;
 

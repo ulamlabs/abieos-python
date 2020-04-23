@@ -1,8 +1,8 @@
 import pytest
 
-import abieos
+from abieos import EosAbiSerializer
 
 
-@pytest.fixture(autouse=True)
-def context():
-    abieos.create()
+@pytest.fixture
+def serializer():
+    return EosAbiSerializer()

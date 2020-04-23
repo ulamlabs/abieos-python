@@ -1,45 +1,44 @@
 import binascii
 
-import abieos
+import pytest
+
+from abieos import EosAbiSerializerException
 
 
-def test_set_abi_json():
+def test_set_abi_json(serializer):
     with open('tests/test_abi.json', 'r') as f:
         abi = f.read()
 
-    result = abieos.set_abi(abieos.string_to_name('test.abi'), abi)
-    assert result
+    serializer.set_abi_from_json('test.abi', abi)
 
 
-def test_set_abi_hex():
-    contract = abieos.string_to_name('eosio.token')
-    transfer_method = abieos.string_to_name('transfer')
-
+def test_set_abi_from_hex(serializer):
     with open('tests/token_abi.hex', 'r') as f:
         abi = f.read()
 
     # before loading ABI, we shouldn't be able to check the type
-    assert abieos.get_type_for_action(contract, transfer_method) is None
+    with pytest.raises(EosAbiSerializerException):
+        serializer.get_type_for_action('eosio.token', 'transfer')
 
     # after loading ABI it will return "transfer"
-    result = abieos.set_abi_hex(contract, abi)
-    assert result
-    assert abieos.get_type_for_action(contract, transfer_method) == 'transfer'
+    serializer.set_abi_from_hex('eosio.token', abi)
+    assert (
+        serializer.get_type_for_action('eosio.token', 'transfer') == 'transfer'
+    )
 
 
-def test_set_abi_bin():
-    contract = abieos.string_to_name('eosio.token')
-    transfer_method = abieos.string_to_name('transfer')
-
+def test_set_abi_bin(serializer):
     with open('tests/token_abi.hex', 'r') as f:
         abi = f.read()
 
     abi_bin = binascii.unhexlify(abi)
 
     # before loading ABI, we shouldn't be able to check the type
-    assert abieos.get_type_for_action(contract, transfer_method) is None
+    with pytest.raises(EosAbiSerializerException):
+        serializer.get_type_for_action('eosio.token', 'transfer')
 
     # after loading ABI it will return "transfer"
-    result = abieos.set_abi_bin(contract, abi_bin, len(abi_bin))
-    assert result
-    assert abieos.get_type_for_action(contract, transfer_method) == 'transfer'
+    serializer.set_abi_from_bin('eosio.token', abi_bin)
+    assert (
+        serializer.get_type_for_action('eosio.token', 'transfer') == 'transfer'
+    )
