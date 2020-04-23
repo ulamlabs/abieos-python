@@ -1,0 +1,66 @@
+name: Python package
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7]
+        # python-version: [3.5, 3.6, 3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    - name: Install abieos dependencies
+      run: |
+        # we need newer version of CMake from kitware repo
+        sudo apt update
+        sudo apt install -yqq wget apt-transport-https ca-certificates gnupg software-properties-common
+        wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | sudo apt-key add -
+        sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
+        sudo apt update
+        # abieos requires GCC8, CMake and boost
+        sudo apt install -yqq g++8 cmake make libboost-dev libboost-date-time-dev
+    - name: Patch abieos build files
+      run: |
+        sed -i 's/-fsanitize=address,undefined//' external/abieos/CMakeLists.txt
+        sed -i 's/STATIC src\/abi.cpp/STATIC src\/abieos.cpp src\/abi.cpp/' external/abieos/CMakeLists.txt
+    - name: Build abieos
+      run: |
+        cd external/abieos
+        mkdir build
+        cd build
+        CC=gcc-8 CXX=g++-8 cmake ..
+        make
+        cd ../..
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Build library
+      run: |
+        python setup.py build
+    - name: Install dev dependencies
+      run: |
+        pip install -e .[dev]
+    - name: Lint with flake8
+      run: |
+        flake8
+    - name: Test with pytest
+      run: |
+        pytest tests/
+    - name: Build artifacts
+      run: |
+        python setup.py sdist bdist bdist_wheel
+    - uses: actions/upload-artifact@v1
+      with:
+        name: dist-${{ matrix.python-version }}
+        path: dist

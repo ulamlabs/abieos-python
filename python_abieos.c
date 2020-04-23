@@ -1,6 +1,6 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
-#include "abieos/src/abieos.h"
+#include "external/abieos/src/abieos.h"
 
 static abieos_context* _get_context(PyObject* self)
 {

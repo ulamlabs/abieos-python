@@ -1,18 +1,26 @@
-from distutils.core import setup, Extension
-import glob
-
+from setuptools import setup, Extension
 
 setup(
-    name='py-abieos-python',
+    name='abieos-python',
+    description='Python bindings for abieos library.',
+    author='Maciej Janiszewski',
+    author_email='maciej@ulam.io',
     version='1.0',
     ext_modules=[
         Extension(
             'abieos',
-            include_dirs=['abieos/include'],
-            library_dirs=['abieos/build'],
+            include_dirs=['external/abieos/include'],
             sources=['abieosmodule.c'],
-            libraries=['abieos']
+            extra_objects=['external/abieos/build/libabieos.a'],
+            libraries=['stdc++']
         )
     ],
-    data_files=[('/usr/local/lib', glob.glob('abieos/build/libabieos.dylib'))]
+    extras_require={
+        'dev': [
+            'wheel',
+            'flake8',
+            'pytest',
+            'pytest-cov'
+        ]
+    }
 )
