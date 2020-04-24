@@ -45,7 +45,8 @@ setup(
             'wheel',
             'flake8',
             'pytest',
-            'pytest-cov'
+            'pytest-cov',
+            'mypy'
         ]
     }
 )
