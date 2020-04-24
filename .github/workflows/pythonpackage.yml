@@ -47,6 +47,7 @@ jobs:
     - name: Build library
       run: |
         python setup.py build
+        cp build/lib.*/abieos/_private* abieos
     - name: Install dev dependencies
       run: |
         pip install -e .[dev]
@@ -55,7 +56,14 @@ jobs:
         flake8
     - name: Test with pytest
       run: |
-        pytest tests/
+        pytest tests/ --cov --cov-report xml
+    - name: Uploading coverage
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
+        file: ./coverage.xml # optional
+        flags: unittests # optional
+        name: codecov-umbrella # optional
     - name: Build artifacts
       run: |
         python setup.py sdist bdist bdist_wheel

@@ -23,7 +23,7 @@ class EosAbiSerializer:
 
     def string_to_name(self, string: str) -> int:
         return self._result_or_exception(
-            private.string_to_name(self.xw_context, string)
+            private.string_to_name(self._context, string)
         )
 
     def name_to_string(self, name: int) -> str:
@@ -69,7 +69,7 @@ class EosAbiSerializer:
 
     def json_to_bin(self, contract: str, abi_type: str, data: bytes) -> bytes:
         contract_name = self.string_to_name(contract)
-        result = self._result_or_exception(
+        self._result_or_exception(
             private.json_to_bin(self._context, contract_name, abi_type, data)
         )
         return self._result_or_exception(
@@ -78,7 +78,7 @@ class EosAbiSerializer:
 
     def json_to_hex(self, contract: str, abi_type: str, data: str) -> str:
         contract_name = self.string_to_name(contract)
-        result = self._result_or_exception(
+        self._result_or_exception(
             private.json_to_bin(self._context, contract_name, abi_type, data)
         )
         return self._result_or_exception(

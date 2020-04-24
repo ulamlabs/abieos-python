@@ -13,7 +13,7 @@ setup(
     version='1.0.0',
     packages=find_packages(),
     include_package_data=True,
-    license='MIT License', 
+    license='MIT License',
     ext_modules=[
         Extension(
             'abieos._private',
