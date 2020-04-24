@@ -1,0 +1,122 @@
+name: Release
+
+on:
+  release:
+    types: [ created ]
+
+jobs:
+  build_abieos:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-10.15, ubuntu-18.04]
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    - name: Install abieos dependencies
+      if: ${{ matrix.os == 'ubuntu-18.04' }}
+      run: |
+        # we need newer version of CMake from kitware repo
+        sudo apt update
+        sudo apt install -yqq wget apt-transport-https ca-certificates gnupg software-properties-common
+        wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | sudo apt-key add -
+        sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
+        sudo apt update
+        # abieos requires GCC8, CMake and boost
+        sudo apt install -yqq g++-8 cmake make libboost-dev libboost-date-time-dev
+        # switch to GCC8
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 8
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 8
+        sudo update-alternatives --set g++ /usr/bin/g++-8
+        sudo update-alternatives --set gcc /usr/bin/gcc-8
+    - name: Build abieos
+      run: |
+        cd external/abieos
+        mkdir build
+        cd build
+        cmake ..
+        make
+    - uses: actions/upload-artifact@v1
+      with:
+        name: abieos-${{ matrix.os }}
+        path: external/abieos/build
+
+  build_package:
+    runs-on: ${{ matrix.os }}
+    needs: build_abieos
+    strategy:
+      matrix:
+        os: [macos-10.15, ubuntu-18.04]
+        python-version: [3.6, 3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    - uses: actions/download-artifact@v1
+      with:
+        name: abieos-${{ matrix.os }}
+        path: external/abieos/build
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Build library
+      run: |
+        python setup.py build --static
+        cp build/lib.*/abieos/_private* abieos
+    - name: Install dev dependencies
+      run: |
+        pip install -e .[dev]
+    - name: Lint with flake8
+      run: |
+        flake8
+    - name: Check types with mypy
+      run: |
+        mypy
+    - name: Test with pytest
+      run: |
+        pytest --cov --cov-report xml
+    - name: Uploading coverage
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
+        file: ./coverage.xml # optional
+        flags: unittests # optional
+        name: codecov-umbrella # optional
+    - name: Build artifacts
+      run: |
+        python setup.py sdist bdist bdist_wheel
+    - uses: actions/upload-artifact@v1
+      with:
+        name: dist-${{ matrix.python-version }}-${{ matrix.os }}
+        path: dist
+
+  deploy:
+    needs: build_package
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        os: [macos-10.15, ubuntu-18.04]
+        python-version: [3.6, 3.7, 3.8]
+  
+    steps:
+    - name: Set up Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: '3.x'
+    - uses: actions/download-artifact@v1
+      with:
+        name: dist-${{ matrix.python-version }}-${{ matrix.os }}
+        path: dist
+    - name: 'Install twine'
+      run: |
+        python -m pip install --upgrade pip twine
+    - name: Publish
+      env:
+        PYPI_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      run: |
+        twine upload dist/*.tar.gz | true
+        twine upload dist/*.whl
