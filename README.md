@@ -5,8 +5,13 @@
 Python bindings for [abieos](https://github.com/EOSIO/abieos) library. Implements Binary <> JSON conversion of EOS action data using ABIs.
 
 ## Building
+### Prerequisites
 
-abieos depends on a recent version of CMake (>=3.11) and GCC8. Patch to `CMakeLists.txt` is required to be able to build abieos as a static library.
+abieos C++ library depends on a recent version of CMake (>=3.11) and GCC8. Please make sure these are available in your system.
+
+### Statically linked
+
+This is the most comfortable to use, as we can just package the library as a wheel file and ship it. Patch to `CMakeLists.txt` is required to be able to build abieos as a static library.
 
 First you need to build abieos library itself:
 
@@ -22,11 +27,28 @@ $ make
 Then you can simply build the package using `setuptools`.
 
 ```shell
-$ python setup.py build
-$ python setup.py sdist bdist bdist_wheel
+$ python setup.py build --static
 ```
 
-It's recommended to install it using the resulting wheel file instead of `setup.py install`.
+### Dynamically linked
+
+If you really want to dynamically link the bindings to the version of abieos installed on your system, you also can. At the time of writing these instructions (24.02.2020), EOSIO does not release a binary packages for any OS nor even supports installing the built library using `make` command.
+
+#### macOS
+
+A small patch to `CMakeLists.txt` has to be applied for the library to build as a `.dylib` instead of `.so`, thus allowing us to link against it.
+
+```shell
+$ sed -i 's/abieos_module MODULE/abieos_module SHARED/' ../CMakeLists.txt
+```
+
+#### Common
+
+Assuming you've built the library and copied it manually into correct paths, you can simply build the bindings using `setuptools`.
+
+```shell
+$ python setup.py build
+```
 
 ## Running tests
 
