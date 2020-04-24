@@ -36,7 +36,6 @@ jobs:
         cd build
         CC=gcc-8 CXX=g++-8 cmake ..
         make
-        cd ../..
     - uses: actions/upload-artifact@v1
       with:
         name: abieos
@@ -71,9 +70,12 @@ jobs:
     - name: Lint with flake8
       run: |
         flake8
+    - name: Check types with mypy
+      run: |
+        mypy
     - name: Test with pytest
       run: |
-        pytest tests/ --cov --cov-report xml
+        pytest --cov --cov-report xml
     - name: Uploading coverage
       uses: codecov/codecov-action@v1
       with:

@@ -1,5 +1,3 @@
-import json
-
 import pytest
 
 
@@ -35,17 +33,13 @@ def example_hex():
 
 def test_json_to_bin(eosio_token, serializer, example_json, example_bin):
     transfer = serializer.get_type_for_action('eosio.token', 'transfer')
-    result = serializer.json_to_bin(
-        'eosio.token', transfer, json.dumps(example_json)
-    )
+    result = serializer.json_to_bin('eosio.token', transfer, example_json)
     assert result == example_bin
 
 
 def test_json_to_hex(eosio_token, serializer, example_json, example_hex):
     transfer = serializer.get_type_for_action('eosio.token', 'transfer')
-    result = serializer.json_to_hex(
-        'eosio.token', transfer, json.dumps(example_json)
-    )
+    result = serializer.json_to_hex('eosio.token', transfer, example_json)
     assert result == example_hex
 
 
@@ -53,11 +47,11 @@ def test_bin_to_json(eosio_token, serializer, example_bin, example_json):
     transfer = serializer.get_type_for_action('eosio.token', 'transfer')
     result = serializer.bin_to_json('eosio.token', transfer, example_bin)
     assert result is not None
-    assert json.loads(result) == example_json
+    assert result == example_json
 
 
 def test_hex_to_json(eosio_token, serializer, example_hex, example_json):
     transfer = serializer.get_type_for_action('eosio.token', 'transfer')
     result = serializer.hex_to_json('eosio.token', transfer, example_hex)
     assert result is not None
-    assert json.loads(result) == example_json
+    assert result == example_json

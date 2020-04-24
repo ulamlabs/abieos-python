@@ -9,6 +9,7 @@ def test_set_abi_json(serializer):
     with open('tests/test_abi.json', 'r') as f:
         abi = f.read()
 
+    abi = serializer._loads(abi)
     serializer.set_abi_from_json('test.abi', abi)
 
 
