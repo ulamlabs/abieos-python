@@ -1,3 +1,4 @@
 [submodule "external/abieos"]
 	path = external/abieos
-	url = git@github.com:EOSIO/abieos.git
+	url = git@github.com:ulamlabs/abieos.git
+	branch = build-patches
