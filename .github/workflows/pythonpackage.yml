@@ -24,17 +24,14 @@ jobs:
         sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
         sudo apt update
         # abieos requires GCC8, CMake and boost
-        sudo apt install -yqq g++8 cmake make libboost-dev libboost-date-time-dev
-    - name: Patch abieos build files
-      run: |
-        sed -i 's/STATIC src\/abi.cpp/STATIC src\/abieos.cpp src\/abi.cpp/' external/abieos/CMakeLists.txt
+        sudo apt install -yqq g++-8 cmake make libboost-dev libboost-date-time-dev
     - name: Build abieos
       run: |
         cd external/abieos
         mkdir build
         cd build
         CC=gcc-8 CXX=g++-8 cmake ..
-        make abieos
+        make
     - uses: actions/upload-artifact@v1
       with:
         name: abieos

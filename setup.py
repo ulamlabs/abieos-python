@@ -8,7 +8,7 @@ library_dirs = []
 
 # Hacky but are there really any docs for this?
 if '--static' in sys.argv:
-    extra_objects = ['external/abieos/build/libabieos.a']
+    extra_objects = ['external/abieos/build/libabieos_static.a']
     sys.argv.remove('--static')
 else:
     libraries.append('abieos')

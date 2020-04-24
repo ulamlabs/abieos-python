@@ -19,7 +19,6 @@ First you need to build abieos library itself:
 $ git submodule update --init-recursive
 $ mkdir external/abieos/build
 $ cd external/abieos/build
-$ sed -i 's/STATIC src\/abi.cpp/STATIC src\/abieos.cpp src\/abi.cpp/' ../CMakeLists.txt
 $ cmake ..
 $ make
 ```
@@ -32,19 +31,7 @@ $ python setup.py build --static
 
 ### Dynamically linked
 
-If you really want to dynamically link the bindings to the version of abieos installed on your system, you also can. At the time of writing these instructions (24.02.2020), EOSIO does not release a binary packages for any OS nor even supports installing the built library using `make` command.
-
-#### macOS
-
-A small patch to `CMakeLists.txt` has to be applied for the library to build as a `.dylib` instead of `.so`, thus allowing us to link against it.
-
-```shell
-$ sed -i 's/abieos_module MODULE/abieos_module SHARED/' ../CMakeLists.txt
-```
-
-#### Common
-
-Assuming you've built the library and copied it manually into correct paths, you can simply build the bindings using `setuptools`.
+If you really want to dynamically link the bindings to the version of abieos installed on your system, you also can. At the time of writing these instructions (24.02.2020), EOSIO does not release a binary packages for any OS nor even supports installing the built library using `make` command. Assuming you've built the library and copied it manually into correct paths, you can simply build the bindings using `setuptools`.
 
 ```shell
 $ python setup.py build
