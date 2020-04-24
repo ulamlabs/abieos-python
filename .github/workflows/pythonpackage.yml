@@ -150,8 +150,7 @@ jobs:
         pip install --upgrade pip twine
     - name: Publish
       env:
-        PYPI_USERNAME: ${{ secrets.PYPI_USERNAME }}
-        PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
-        twine upload dist/* | true
-        twine upload wheelhouse/*.whl | true
+        twine upload dist/* wheelhouse/*.whl || true
