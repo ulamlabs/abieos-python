@@ -7,6 +7,7 @@ setup(
     name='abieos-python',
     description='Python bindings for abieos library.',
     long_description=long_description,
+    long_description_content_type='text/markdown',
     author='Maciej Janiszewski',
     author_email='maciej@ulam.io',
     url="https://github.com/ulamlabs/abieos-python",
