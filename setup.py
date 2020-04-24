@@ -39,14 +39,5 @@ setup(
             library_dirs=library_dirs,
             libraries=libraries
         )
-    ],
-    extras_require={
-        'dev': [
-            'wheel',
-            'flake8',
-            'pytest',
-            'pytest-cov',
-            'mypy'
-        ]
-    }
+    ]
 )
